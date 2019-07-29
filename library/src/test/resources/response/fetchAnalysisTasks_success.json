@@ -1,0 +1,22 @@
+{
+  "queue": [],
+  "current": {
+    "id": "AWwpX4KcqfDuqshn3VIh",
+    "type": "REPORT",
+    "componentId": "AWwov08KqfDuqshn3VIR",
+    "componentKey": "project-1",
+    "componentName": "Project 1",
+    "componentQualifier": "TRK",
+    "analysisId": "AWwpX4pktwXzvuajcyhk",
+    "status": "SUCCESS",
+    "submittedAt": "2019-07-25T15:43:41+0200",
+    "startedAt": "2019-07-25T15:43:42+0200",
+    "executedAt": "2019-07-25T15:43:50+0200",
+    "executionTimeMs": 7485,
+    "logs": false,
+    "hasScannerContext": true,
+    "organization": "default-organization",
+    "warningCount": 1,
+    "warnings": []
+  }
+}
