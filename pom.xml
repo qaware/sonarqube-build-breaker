@@ -196,6 +196,25 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Sign the JARs -->
+            <plugin>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <configuration>
+                    <keyname>90A084A6C497472E00C141D4325DE38C43BFA040</keyname>
+                    <executable>gpg2</executable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
