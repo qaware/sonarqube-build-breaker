@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -84,7 +85,9 @@ class BuildBreakerImplTest {
 
         // When: we execute the build breaker
         // Then: everything is fine
-        sut.breakBuildIfNeeded(PROJECT_KEY);
+        assertThatCode(() -> {
+            sut.breakBuildIfNeeded(PROJECT_KEY);
+        }).doesNotThrowAnyException();
     }
 
     private void setupAnalysisTasks(@Nullable AnalysisTasks.Task current, AnalysisTasks.Task... queue) throws IOException, SonarQubeException {
