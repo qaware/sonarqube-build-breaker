@@ -61,19 +61,19 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.10</version>
+                <version>4.5.11</version>
             </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.10.0</version>
+                <version>2.10.2</version>
             </dependency>
 
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.28</version>
+                <version>1.7.30</version>
             </dependency>
 
             <dependency>
@@ -85,7 +85,7 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-plugin-api</artifactId>
-                <version>3.6.2</version>
+                <version>3.6.3</version>
             </dependency>
 
             <dependency>
@@ -104,7 +104,7 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>5.5.2</version>
+                <version>5.6.0</version>
                 <scope>test</scope>
             </dependency>
 
@@ -118,14 +118,14 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.13.2</version>
+                <version>3.15.0</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.4</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -191,7 +191,7 @@
                     <!-- Create sources JAR -->
                     <plugin>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.1</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
