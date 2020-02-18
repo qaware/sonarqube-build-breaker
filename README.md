@@ -29,9 +29,13 @@ The build breaker needs two environment variables set:
 
 These can be configured in the CI/CD settings in the GitLab project configuration.
 
+# Changelog
+
+See [this document](CHANGELOG.md).
+
 # License
 
-Licensed under [MIT](https://opensource.org/licenses/MIT), Copyright (c) 2019 QAware GmbH
+Licensed under [MIT](https://opensource.org/licenses/MIT), Copyright (c) 2019 - 2020 QAware GmbH
 
 # Maintainer
 
