@@ -55,8 +55,8 @@ class BuildBreakerImplTest {
     void wait_for_queue() throws IOException, SonarQubeException {
         // Given: on the 1st call an analysis in the queue, on the 2nd call a finished analysis
         when(sonarQubeConnector.fetchAnalysisTasks(PROJECT_KEY)).thenReturn(
-                new AnalysisTasks(Collections.singletonList(new AnalysisTasks.Task(AnalysisTasks.Status.PENDING)), null),
-                new AnalysisTasks(Collections.emptyList(), new AnalysisTasks.Task(AnalysisTasks.Status.FAILED))
+            new AnalysisTasks(Collections.singletonList(new AnalysisTasks.Task(AnalysisTasks.Status.PENDING)), null),
+            new AnalysisTasks(Collections.emptyList(), new AnalysisTasks.Task(AnalysisTasks.Status.FAILED))
         );
 
         // When: we execute the build breaker
