@@ -4,6 +4,8 @@
 
 Breaks the build if the SonarQube quality gate of the project is red.
 
+See [the blog post I wrote](https://qaware.blogspot.com/2020/02/breaking-your-build-on-sonarqube.html) for more details.
+
 ## Components
 
 * [Maven plugin](sqbb-maven-plugin/) - You can use this to run it in your Maven build.
