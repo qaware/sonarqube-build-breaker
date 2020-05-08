@@ -2,6 +2,7 @@ package de.qaware.tools.sqbb.library.impl.connector;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.qaware.tools.sqbb.library.api.BranchMode;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
 import de.qaware.tools.sqbb.library.api.connector.AnalysisTasks;
 import de.qaware.tools.sqbb.library.api.connector.Authentication;
@@ -52,9 +53,11 @@ public class SonarQubeConnectorImpl implements SonarQubeConnector {
     }
 
     @Override
-    public QualityGateStatus fetchQualityGateStatus(ProjectKey projectKey) throws IOException, SonarQubeException {
+    public QualityGateStatus fetchQualityGateStatus(ProjectKey projectKey, BranchMode branchMode) throws IOException, SonarQubeException {
         LOGGER.debug("Fetching quality gate status for project {}", projectKey);
         URI uri = resolveUri("api/qualitygates/project_status?projectKey=" + queryValue(projectKey.getKey()));
+
+        // TODO: Support more branch modes -> &branch=master
 
         String content = executeGet(uri);
         QualityGateDto dto = objectMapper.readValue(content, QualityGateDto.class);
@@ -63,9 +66,11 @@ public class SonarQubeConnectorImpl implements SonarQubeConnector {
     }
 
     @Override
-    public AnalysisTasks fetchAnalysisTasks(ProjectKey projectKey) throws IOException, SonarQubeException {
+    public AnalysisTasks fetchAnalysisTasks(ProjectKey projectKey, BranchMode branchMode) throws IOException, SonarQubeException {
         LOGGER.debug("Fetching analysis tasks for project {}", projectKey);
         URI uri = resolveUri("api/ce/component?component=" + queryValue(projectKey.getKey()));
+
+        // TODO: Support more branch modes
 
         String content = executeGet(uri);
         AnalysisTasksDto dto = objectMapper.readValue(content, AnalysisTasksDto.class);

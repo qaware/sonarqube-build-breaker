@@ -1,6 +1,7 @@
 package de.qaware.tools.sqbb.cli;
 
 import ch.qos.logback.classic.Level;
+import de.qaware.tools.sqbb.library.api.BranchMode;
 import de.qaware.tools.sqbb.library.api.BreakBuildException;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
 import de.qaware.tools.sqbb.library.api.connector.Authentication;
@@ -49,12 +50,12 @@ public class Cli {
     @SuppressWarnings("squid:S00112") // throws exception is okay, we handle that above!
     private void run(String[] args) throws Exception {
         // Collect information from environment and commandline arguments
-        ProjectKey projectKey = ProjectKey.of(getProjectKey(args));
+        ProjectKey projectKey = ProjectKey.of(getProjectKey(args), null); // TODO: Support more branch modes
         Authentication authentication = getAuthentication();
         String baseUrl = getBaseUrl();
 
         try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(10), baseUrl, authentication)) {
-            buildBreaker.get().breakBuildIfNeeded(projectKey);
+            buildBreaker.get().breakBuildIfNeeded(projectKey, BranchMode.PROJECT_KEY); // TODO: Support more branch modes
         }
     }
 

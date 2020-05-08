@@ -1,5 +1,6 @@
 package de.qaware.tools.sqbb.mavenplugin;
 
+import de.qaware.tools.sqbb.library.api.BranchMode;
 import de.qaware.tools.sqbb.library.api.BreakBuildException;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
 import de.qaware.tools.sqbb.library.api.connector.Authentication;
@@ -33,21 +34,35 @@ public class SqbbMojo extends AbstractMojo {
     private String sonarQubeToken;
     @Parameter(property = "sqbb.waitTime", defaultValue = "10")
     private long waitTime;
+    @Parameter(property = "sqbb.branchMode", defaultValue = "projectKey")
+    private String branchMode;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        String sonarQubeProjectKey = projectKey;
-        if (branch != null) {
-            sonarQubeProjectKey = sonarQubeProjectKey + ":" + branch;
+        BranchMode branchMode = parseBranchMode();
+        if (branch == null) {
+            LOGGER.info("Running SonarQube build breaker on project {}", projectKey);
+        } else {
+            LOGGER.info("Running SonarQube build breaker on project {}, branch {} (mode: {})", projectKey, branch, branchMode);
         }
-        LOGGER.info("Running SonarQube build breaker on project {}", sonarQubeProjectKey);
 
         try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(waitTime), sonarQubeUrl, Authentication.fromToken(sonarQubeToken))) {
-            buildBreaker.get().breakBuildIfNeeded(ProjectKey.of(sonarQubeProjectKey));
+            buildBreaker.get().breakBuildIfNeeded(ProjectKey.of(projectKey, branch), branchMode);
         } catch (BreakBuildException e) {
             throw new MojoFailureException("SonarQube build breaker", e);
         } catch (Exception e) {
             throw new MojoExecutionException("Exception while running build breaker", e);
+        }
+    }
+
+    private BranchMode parseBranchMode() throws MojoExecutionException {
+        switch (branchMode) {
+            case "projectKey":
+                return BranchMode.PROJECT_KEY;
+            case "sonarQube":
+                return BranchMode.SONARQUBE;
+            default:
+                throw new MojoExecutionException(String.format("Failed to parse branch mode. Supported values: [projectKey, sonarQube]. Was: '%s'", branchMode));
         }
     }
 }

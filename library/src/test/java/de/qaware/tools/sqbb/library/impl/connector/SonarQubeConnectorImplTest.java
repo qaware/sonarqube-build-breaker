@@ -1,5 +1,6 @@
 package de.qaware.tools.sqbb.library.impl.connector;
 
+import de.qaware.tools.sqbb.library.api.BranchMode;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
 import de.qaware.tools.sqbb.library.api.connector.AnalysisTasks;
 import de.qaware.tools.sqbb.library.api.connector.Authentication;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SonarQubeConnectorImplTest {
-    private static final ProjectKey PROJECT_KEY = ProjectKey.of("project-1");
+    private static final ProjectKey PROJECT_KEY = ProjectKey.of("project-1", null);
 
     private SonarQubeConnector sut;
     private HttpClient httpClient;
@@ -45,7 +46,7 @@ class SonarQubeConnectorImplTest {
 
         // When: We fetch the tasks
         // Then: we get an exception with a useful message
-        assertThatThrownBy(() -> sut.fetchAnalysisTasks(PROJECT_KEY)).isInstanceOf(SonarQubeException.class).hasMessageContaining("got 401");
+        assertThatThrownBy(() -> sut.fetchAnalysisTasks(PROJECT_KEY, BranchMode.PROJECT_KEY)).isInstanceOf(SonarQubeException.class).hasMessageContaining("got 401");
     }
 
     @Test
@@ -55,7 +56,7 @@ class SonarQubeConnectorImplTest {
 
         // When: We fetch the tasks
         // Then: we get an ProjectNotFoundException
-        assertThatThrownBy(() -> sut.fetchAnalysisTasks(PROJECT_KEY)).isInstanceOf(ProjectNotFoundException.class);
+        assertThatThrownBy(() -> sut.fetchAnalysisTasks(PROJECT_KEY, BranchMode.PROJECT_KEY)).isInstanceOf(ProjectNotFoundException.class);
     }
 
     @Test
@@ -65,7 +66,7 @@ class SonarQubeConnectorImplTest {
 
         // When: We fetch the quality gate status
         // Then: we get an exception with a useful message
-        assertThatThrownBy(() -> sut.fetchQualityGateStatus(PROJECT_KEY)).isInstanceOf(SonarQubeException.class).hasMessageContaining("got 401");
+        assertThatThrownBy(() -> sut.fetchQualityGateStatus(PROJECT_KEY, BranchMode.PROJECT_KEY)).isInstanceOf(SonarQubeException.class).hasMessageContaining("got 401");
     }
 
     @Test
@@ -75,7 +76,7 @@ class SonarQubeConnectorImplTest {
 
         // When: We fetch the quality gate status
         // Then: we get an ProjectNotFoundException
-        assertThatThrownBy(() -> sut.fetchQualityGateStatus(PROJECT_KEY)).isInstanceOf(ProjectNotFoundException.class);
+        assertThatThrownBy(() -> sut.fetchQualityGateStatus(PROJECT_KEY, BranchMode.PROJECT_KEY)).isInstanceOf(ProjectNotFoundException.class);
     }
 
     @Test
@@ -84,7 +85,7 @@ class SonarQubeConnectorImplTest {
         httpReturns("http://localhost:9000/api/ce/component?component=project-1", 200, "/response/fetchAnalysisTasks_success.json");
 
         // When: We fetch the analysis tasks
-        AnalysisTasks tasks = sut.fetchAnalysisTasks(PROJECT_KEY);
+        AnalysisTasks tasks = sut.fetchAnalysisTasks(PROJECT_KEY, BranchMode.PROJECT_KEY);
 
         // Then: the queue is empty, and the last state is success
         assertThat(tasks.getQueue()).isEmpty();
@@ -97,7 +98,7 @@ class SonarQubeConnectorImplTest {
         httpReturns("http://localhost:9000/api/ce/component?component=project-1", 200, "/response/fetchAnalysisTasks_failed.json");
 
         // When: We fetch the analysis tasks
-        AnalysisTasks tasks = sut.fetchAnalysisTasks(PROJECT_KEY);
+        AnalysisTasks tasks = sut.fetchAnalysisTasks(PROJECT_KEY, BranchMode.PROJECT_KEY);
 
         // Then: the queue is empty, and the last state is success
         assertThat(tasks.getQueue()).isEmpty();
@@ -110,7 +111,7 @@ class SonarQubeConnectorImplTest {
         httpReturns("http://localhost:9000/api/ce/component?component=project-1", 200, "/response/fetchAnalysisTasks_queue.json");
 
         // When: We fetch the analysis tasks
-        AnalysisTasks tasks = sut.fetchAnalysisTasks(PROJECT_KEY);
+        AnalysisTasks tasks = sut.fetchAnalysisTasks(PROJECT_KEY, BranchMode.PROJECT_KEY);
 
         // Then: the queue is empty, and the last state is success
         assertThat(tasks.getQueue()).hasSize(1);
@@ -124,7 +125,7 @@ class SonarQubeConnectorImplTest {
         httpReturns("http://localhost:9000/api/ce/component?component=project-1", 200, "/response/fetchAnalysisTasks_no_current.json");
 
         // When: We fetch the analysis tasks
-        AnalysisTasks tasks = sut.fetchAnalysisTasks(PROJECT_KEY);
+        AnalysisTasks tasks = sut.fetchAnalysisTasks(PROJECT_KEY, BranchMode.PROJECT_KEY);
 
         // Then: the queue is empty, and the last state is success
         assertThat(tasks.getQueue()).isEmpty();
@@ -137,7 +138,7 @@ class SonarQubeConnectorImplTest {
         httpReturns("http://localhost:9000/api/qualitygates/project_status?projectKey=project-1", 200, "/response/fetchQualityGateStatus_ok.json");
 
         // When: We fetch the quality gate status
-        QualityGateStatus status = sut.fetchQualityGateStatus(PROJECT_KEY);
+        QualityGateStatus status = sut.fetchQualityGateStatus(PROJECT_KEY, BranchMode.PROJECT_KEY);
 
         // Then: the status is OK
         assertThat(status).isEqualTo(QualityGateStatus.OK);
@@ -149,7 +150,7 @@ class SonarQubeConnectorImplTest {
         httpReturns("http://localhost:9000/api/qualitygates/project_status?projectKey=project-1", 200, "/response/fetchQualityGateStatus_error.json");
 
         // When: We fetch the quality gate status
-        QualityGateStatus status = sut.fetchQualityGateStatus(PROJECT_KEY);
+        QualityGateStatus status = sut.fetchQualityGateStatus(PROJECT_KEY, BranchMode.PROJECT_KEY);
 
         // Then: the status is ERROR
         assertThat(status).isEqualTo(QualityGateStatus.ERROR);

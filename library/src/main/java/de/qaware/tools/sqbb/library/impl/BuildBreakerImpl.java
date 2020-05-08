@@ -1,5 +1,6 @@
 package de.qaware.tools.sqbb.library.impl;
 
+import de.qaware.tools.sqbb.library.api.BranchMode;
 import de.qaware.tools.sqbb.library.api.BreakBuildException;
 import de.qaware.tools.sqbb.library.api.BuildBreaker;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
@@ -31,13 +32,13 @@ class BuildBreakerImpl implements BuildBreaker {
     }
 
     @Override
-    public void breakBuildIfNeeded(ProjectKey projectKey) throws IOException, SonarQubeException, InterruptedException, BreakBuildException {
+    public void breakBuildIfNeeded(ProjectKey projectKey, BranchMode branchMode) throws IOException, SonarQubeException, InterruptedException, BreakBuildException {
         LOGGER.info("Fetching analysis tasks ...");
-        AnalysisTasks analysisTasks = sonarQubeConnector.fetchAnalysisTasks(projectKey);
+        AnalysisTasks analysisTasks = sonarQubeConnector.fetchAnalysisTasks(projectKey, branchMode);
         while (!analysisTasks.getQueue().isEmpty()) {
             LOGGER.info("Analysis task still running, checking again in {} second(s) ...", waitTime.toMillis() / 1000);
             Thread.sleep(waitTime.toMillis());
-            analysisTasks = sonarQubeConnector.fetchAnalysisTasks(projectKey);
+            analysisTasks = sonarQubeConnector.fetchAnalysisTasks(projectKey, branchMode);
         }
 
         if (analysisTasks.getLastFinished() == null) {
@@ -51,7 +52,7 @@ class BuildBreakerImpl implements BuildBreaker {
         }
 
         LOGGER.info("Last analysis was successful, fetching quality gate status ...");
-        QualityGateStatus qualityGateStatus = sonarQubeConnector.fetchQualityGateStatus(projectKey);
+        QualityGateStatus qualityGateStatus = sonarQubeConnector.fetchQualityGateStatus(projectKey, branchMode);
 
         if (qualityGateStatus == QualityGateStatus.ERROR) {
             LOGGER.error("Quality gate failed, breaking build!");

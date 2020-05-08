@@ -17,10 +17,11 @@ public interface BuildBreaker {
      * - if the quality gate of the project is in error state (red)
      *
      * @param projectKey project
+     * @param branchMode branch mode
      * @throws IOException          if a I/O failure occured while connecting to SonarQube
      * @throws SonarQubeException   if SonarQube returned an error
      * @throws InterruptedException if the thread got interrupted while waiting for the next analysis queue polling
      * @throws BreakBuildException  if the build needs to be broken
      */
-    void breakBuildIfNeeded(ProjectKey projectKey) throws IOException, SonarQubeException, InterruptedException, BreakBuildException;
+    void breakBuildIfNeeded(ProjectKey projectKey, BranchMode branchMode) throws IOException, SonarQubeException, InterruptedException, BreakBuildException;
 }

@@ -1,5 +1,6 @@
 package de.qaware.tools.sqbb.library.impl;
 
+import de.qaware.tools.sqbb.library.api.BranchMode;
 import de.qaware.tools.sqbb.library.api.BreakBuildException;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
 import de.qaware.tools.sqbb.library.api.connector.AnalysisTasks;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class BuildBreakerImplTest {
-    private static final ProjectKey PROJECT_KEY = ProjectKey.of("project-1");
+    private static final ProjectKey PROJECT_KEY = ProjectKey.of("project-1", null);
     private SonarQubeConnector sonarQubeConnector;
     private BuildBreakerImpl sut;
 
@@ -38,7 +39,7 @@ class BuildBreakerImplTest {
 
         // When: we execute the build breaker
         // Then: we break the build with a useful message
-        assertThatThrownBy(() -> sut.breakBuildIfNeeded(PROJECT_KEY)).isInstanceOf(BreakBuildException.class).hasMessageContaining("run SonarQube analysis before the build breaker");
+        assertThatThrownBy(() -> sut.breakBuildIfNeeded(PROJECT_KEY, BranchMode.PROJECT_KEY)).isInstanceOf(BreakBuildException.class).hasMessageContaining("run SonarQube analysis before the build breaker");
     }
 
     @Test
@@ -48,20 +49,20 @@ class BuildBreakerImplTest {
 
         // When: we execute the build breaker
         // Then: we break the build with a useful message
-        assertThatThrownBy(() -> sut.breakBuildIfNeeded(PROJECT_KEY)).isInstanceOf(BreakBuildException.class).hasMessageContaining("analysis task failed");
+        assertThatThrownBy(() -> sut.breakBuildIfNeeded(PROJECT_KEY, BranchMode.PROJECT_KEY)).isInstanceOf(BreakBuildException.class).hasMessageContaining("analysis task failed");
     }
 
     @Test
     void wait_for_queue() throws IOException, SonarQubeException {
         // Given: on the 1st call an analysis in the queue, on the 2nd call a finished analysis
-        when(sonarQubeConnector.fetchAnalysisTasks(PROJECT_KEY)).thenReturn(
+        when(sonarQubeConnector.fetchAnalysisTasks(PROJECT_KEY, BranchMode.PROJECT_KEY)).thenReturn(
             new AnalysisTasks(Collections.singletonList(new AnalysisTasks.Task(AnalysisTasks.Status.PENDING)), null),
             new AnalysisTasks(Collections.emptyList(), new AnalysisTasks.Task(AnalysisTasks.Status.FAILED))
         );
 
         // When: we execute the build breaker
         // Then: we break the build with a useful message
-        assertThatThrownBy(() -> sut.breakBuildIfNeeded(PROJECT_KEY)).isInstanceOf(BreakBuildException.class).hasMessageContaining("analysis task failed");
+        assertThatThrownBy(() -> sut.breakBuildIfNeeded(PROJECT_KEY, BranchMode.PROJECT_KEY)).isInstanceOf(BreakBuildException.class).hasMessageContaining("analysis task failed");
     }
 
     @Test
@@ -69,11 +70,11 @@ class BuildBreakerImplTest {
         // Given: success analysis and nothing in the queue
         setupAnalysisTasks(new AnalysisTasks.Task(AnalysisTasks.Status.SUCCESS));
         // Given: quality gate is error
-        when(sonarQubeConnector.fetchQualityGateStatus(PROJECT_KEY)).thenReturn(QualityGateStatus.ERROR);
+        when(sonarQubeConnector.fetchQualityGateStatus(PROJECT_KEY, BranchMode.PROJECT_KEY)).thenReturn(QualityGateStatus.ERROR);
 
         // When: we execute the build breaker
         // Then: we break the build with a useful message
-        assertThatThrownBy(() -> sut.breakBuildIfNeeded(PROJECT_KEY)).isInstanceOf(BreakBuildException.class).hasMessageContaining("Quality gate failed");
+        assertThatThrownBy(() -> sut.breakBuildIfNeeded(PROJECT_KEY, BranchMode.PROJECT_KEY)).isInstanceOf(BreakBuildException.class).hasMessageContaining("Quality gate failed");
     }
 
     @Test
@@ -81,16 +82,16 @@ class BuildBreakerImplTest {
         // Given: success analysis and nothing in the queue
         setupAnalysisTasks(new AnalysisTasks.Task(AnalysisTasks.Status.SUCCESS));
         // Given: quality gate is error
-        when(sonarQubeConnector.fetchQualityGateStatus(PROJECT_KEY)).thenReturn(QualityGateStatus.OK);
+        when(sonarQubeConnector.fetchQualityGateStatus(PROJECT_KEY, BranchMode.PROJECT_KEY)).thenReturn(QualityGateStatus.OK);
 
         // When: we execute the build breaker
         // Then: everything is fine
         assertThatCode(() -> {
-            sut.breakBuildIfNeeded(PROJECT_KEY);
+            sut.breakBuildIfNeeded(PROJECT_KEY, BranchMode.PROJECT_KEY);
         }).doesNotThrowAnyException();
     }
 
     private void setupAnalysisTasks(@Nullable AnalysisTasks.Task current, AnalysisTasks.Task... queue) throws IOException, SonarQubeException {
-        when(sonarQubeConnector.fetchAnalysisTasks(PROJECT_KEY)).thenReturn(new AnalysisTasks(Arrays.asList(queue), current));
+        when(sonarQubeConnector.fetchAnalysisTasks(PROJECT_KEY, BranchMode.PROJECT_KEY)).thenReturn(new AnalysisTasks(Arrays.asList(queue), current));
     }
 }
