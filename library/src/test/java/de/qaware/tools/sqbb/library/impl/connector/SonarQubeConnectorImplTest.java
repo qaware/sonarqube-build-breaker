@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 class SonarQubeConnectorImplTest {
     private static final ProjectKey PROJECT_KEY = ProjectKey.of("project-1", null);
+    private static final ProjectKey PROJECT_KEY_WITH_BRANCH = ProjectKey.of("project-1", "master");
 
     private SonarQubeConnector sut;
     private HttpClient httpClient;
@@ -139,6 +140,30 @@ class SonarQubeConnectorImplTest {
 
         // When: We fetch the quality gate status
         QualityGateStatus status = sut.fetchQualityGateStatus(PROJECT_KEY, BranchMode.PROJECT_KEY);
+
+        // Then: the status is OK
+        assertThat(status).isEqualTo(QualityGateStatus.OK);
+    }
+
+    @Test
+    void fetchQualityGateStatus_ok_branch_mode_sonarQube() throws IOException, SonarQubeException {
+        // Given: Return mock content on http call
+        httpReturns("http://localhost:9000/api/qualitygates/project_status?projectKey=project-1&branch=master", 200, "/response/fetchQualityGateStatus_ok.json");
+
+        // When: We fetch the quality gate status with branch mode SonarQube
+        QualityGateStatus status = sut.fetchQualityGateStatus(PROJECT_KEY_WITH_BRANCH, BranchMode.SONARQUBE);
+
+        // Then: the status is OK
+        assertThat(status).isEqualTo(QualityGateStatus.OK);
+    }
+
+    @Test
+    void fetchQualityGateStatus_ok_branch_mode_projectKey() throws IOException, SonarQubeException {
+        // Given: Return mock content on http call
+        httpReturns("http://localhost:9000/api/qualitygates/project_status?projectKey=project-1%3Amaster", 200, "/response/fetchQualityGateStatus_ok.json");
+
+        // When: We fetch the quality gate status with branch mode project key
+        QualityGateStatus status = sut.fetchQualityGateStatus(PROJECT_KEY_WITH_BRANCH, BranchMode.PROJECT_KEY);
 
         // Then: the status is OK
         assertThat(status).isEqualTo(QualityGateStatus.OK);

@@ -5,6 +5,7 @@ import de.qaware.tools.sqbb.library.api.BranchMode;
 import de.qaware.tools.sqbb.library.api.BreakBuildException;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
 import de.qaware.tools.sqbb.library.api.connector.Authentication;
+import de.qaware.tools.sqbb.library.impl.BranchModeParser;
 import de.qaware.tools.sqbb.library.impl.BuildBreakerFactory;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -88,7 +89,7 @@ public class Cli {
 
         String projectKey = commandLine.getArgList().get(commandLine.getArgList().size() - 1);
         String branch = commandLine.getOptionValue("branch");
-        BranchMode branchMode = parseBranchMode(commandLine.getOptionValue("branch-mode", "projectKey"));
+        BranchMode branchMode = new BranchModeParser().parse(commandLine.getOptionValue("branch-mode", "projectKey"));
 
         // Collect information from environment and commandline arguments
         ProjectKey parsedProjectKey = ProjectKey.of(projectKey, branch);
@@ -97,17 +98,6 @@ public class Cli {
 
         try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(10), baseUrl, authentication)) {
             buildBreaker.get().breakBuildIfNeeded(parsedProjectKey, branchMode);
-        }
-    }
-
-    private BranchMode parseBranchMode(String branchMode) throws ParseException {
-        switch (branchMode) {
-            case "projectKey":
-                return BranchMode.PROJECT_KEY;
-            case "sonarQube":
-                return BranchMode.SONARQUBE;
-            default:
-                throw new ParseException(String.format("Failed to parse branch mode. Supported values: [projectKey, sonarQube]. Was: '%s'", branchMode));
         }
     }
 

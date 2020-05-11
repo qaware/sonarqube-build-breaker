@@ -4,6 +4,7 @@ import de.qaware.tools.sqbb.library.api.BranchMode;
 import de.qaware.tools.sqbb.library.api.BreakBuildException;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
 import de.qaware.tools.sqbb.library.api.connector.Authentication;
+import de.qaware.tools.sqbb.library.impl.BranchModeParser;
 import de.qaware.tools.sqbb.library.impl.BuildBreakerFactory;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -39,7 +40,7 @@ public class SqbbMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        BranchMode branchMode = parseBranchMode();
+        BranchMode branchMode = new BranchModeParser().parse(this.branchMode);
         if (branch == null) {
             LOGGER.info("Running SonarQube build breaker on project {}", projectKey);
         } else {
@@ -52,17 +53,6 @@ public class SqbbMojo extends AbstractMojo {
             throw new MojoFailureException("SonarQube build breaker", e);
         } catch (Exception e) {
             throw new MojoExecutionException("Exception while running build breaker", e);
-        }
-    }
-
-    private BranchMode parseBranchMode() throws MojoExecutionException {
-        switch (branchMode) {
-            case "projectKey":
-                return BranchMode.PROJECT_KEY;
-            case "sonarQube":
-                return BranchMode.SONARQUBE;
-            default:
-                throw new MojoExecutionException(String.format("Failed to parse branch mode. Supported values: [projectKey, sonarQube]. Was: '%s'", branchMode));
         }
     }
 }
