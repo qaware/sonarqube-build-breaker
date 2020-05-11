@@ -1,6 +1,7 @@
 package de.qaware.tools.sqbb.library.api;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
@@ -44,5 +45,23 @@ public class ProjectKey {
             .add("key='" + key + "'")
             .add("branch='" + branch + "'")
             .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ProjectKey that = (ProjectKey) o;
+        return key.equals(that.key) &&
+            Objects.equals(branch, that.branch);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, branch);
     }
 }
