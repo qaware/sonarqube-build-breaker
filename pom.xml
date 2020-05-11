@@ -4,7 +4,7 @@
 
     <groupId>de.qaware.tools.sonarqube-build-breaker</groupId>
     <artifactId>sonarqube-build-breaker</artifactId>
-    <version>2.0</version>
+    <version>2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>SonarQube build breaker</name>
@@ -295,6 +295,6 @@
         <connection>scm:git:https://github.com/qaware/sonarqube-build-breaker.git</connection>
         <developerConnection>scm:git:https://github.com/qaware/sonarqube-build-breaker.git</developerConnection>
         <url>https://github.com/qaware/sonarqube-build-breaker</url>
-        <tag>sonarqube-build-breaker-2.0</tag>
+        <tag>master</tag>
     </scm>
 </project>
