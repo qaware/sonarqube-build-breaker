@@ -35,14 +35,14 @@ These can be configured in the CI/CD settings in the GitLab project configuratio
 
 SonarQube supports two modes of branch analysis: 
 
-Old versions supported appending the branch to the project key, e.g. if the project key is 
+Old versions of SonarQube supported appending the branch to the project key, e.g. if the project key is 
 `de.qaware.tools.sonarqube-build-breaker:sonarqube-build-breaker` and you set `-Dsonar.branch=master` when running the analysis,
 the project for the branch is `de.qaware.tools.sonarqube-build-breaker:sonarqube-build-breaker:master`.
 
-This is how you would run the Maven plugin:
+If you have such projects, this is how you would run the Maven plugin:
 
 ```shell script
-mvn --batch-mode --update-snapshots --non-recursive de.qaware.tools.sonarqube-build-breaker:sqbb-maven-plugin:sqbb -Dsqbb.sonarQubeUrl=$SONAR_URL -Dsqbb.sonarQubeToken=$SONAR_TOKEN -Dsqbb.branch=$CI_BUILD_REF_NAME -Dsqbb.branchMode=projectKey
+mvn --batch-mode --update-snapshots --non-recursive de.qaware.tools.sonarqube-build-breaker:sqbb-maven-plugin:sqbb -Dsqbb.sonarQubeUrl=$SONAR_URL -Dsqbb.sonarQubeToken=$SONAR_TOKEN -Dsqbb.branch=<branch> -Dsqbb.branchMode=projectKey
 ```
 
 and the CLI:
@@ -56,10 +56,10 @@ SonarQube developers or you can [install this plugin](https://github.com/mc1arke
 
 Then you can use the `-Dsonar.branch.name` property when running the SonarQube analysis.
 
-This is how you would run the Maven plugin:
+If you have such projects, this is how you would run the Maven plugin:
 
 ```shell script
-mvn --batch-mode --update-snapshots --non-recursive de.qaware.tools.sonarqube-build-breaker:sqbb-maven-plugin:sqbb -Dsqbb.sonarQubeUrl=$SONAR_URL -Dsqbb.sonarQubeToken=$SONAR_TOKEN -Dsqbb.branch=$CI_BUILD_REF_NAME -Dsqbb.branchMode=sonarQube
+mvn --batch-mode --update-snapshots --non-recursive de.qaware.tools.sonarqube-build-breaker:sqbb-maven-plugin:sqbb -Dsqbb.sonarQubeUrl=$SONAR_URL -Dsqbb.sonarQubeToken=$SONAR_TOKEN -Dsqbb.branch=<branch> -Dsqbb.branchMode=sonarQube
 ```
 
 and the CLI:
@@ -67,7 +67,6 @@ and the CLI:
 ```
 java -jar cli.jar --branch=master --branch-mode=sonarQube <your project key>
 ```
-
 
 # Changelog
 

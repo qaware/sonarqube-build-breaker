@@ -4,6 +4,7 @@
 
 * Update dependencies
 * Add Changelog
+* Add support for native SonarQube branches
 
 ## 1.1 - 2019-08-05
 
