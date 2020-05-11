@@ -2,6 +2,8 @@
 
 ## Unreleased next version
 
+## 2.0 - 2020-05-11
+
 * Update dependencies
 * Add Changelog
 * Add support for native SonarQube branches
