@@ -55,9 +55,15 @@ public class SonarQubeConnectorImpl implements SonarQubeConnector {
     @Override
     public QualityGateStatus fetchQualityGateStatus(ProjectKey projectKey, BranchMode branchMode) throws IOException, SonarQubeException {
         LOGGER.debug("Fetching quality gate status for project {}", projectKey);
-        URI uri = resolveUri("api/qualitygates/project_status?projectKey=" + queryValue(projectKey.getKey()));
+        StringBuilder uriString =
+            new StringBuilder("api/qualitygates/project_status?projectKey=")
+                .append(queryValue(projectKeyToString(projectKey, branchMode)));
 
-        // TODO: Support more branch modes -> &branch=master
+        if (projectKey.getBranch() != null && branchMode == BranchMode.SONARQUBE) {
+            uriString.append("&branch=").append(queryValue(projectKey.getBranch()));
+        }
+
+        URI uri = resolveUri(uriString.toString());
 
         String content = executeGet(uri);
         QualityGateDto dto = objectMapper.readValue(content, QualityGateDto.class);
@@ -68,9 +74,7 @@ public class SonarQubeConnectorImpl implements SonarQubeConnector {
     @Override
     public AnalysisTasks fetchAnalysisTasks(ProjectKey projectKey, BranchMode branchMode) throws IOException, SonarQubeException {
         LOGGER.debug("Fetching analysis tasks for project {}", projectKey);
-        URI uri = resolveUri("api/ce/component?component=" + queryValue(projectKey.getKey()));
-
-        // TODO: Support more branch modes
+        URI uri = resolveUri("api/ce/component?component=" + queryValue(projectKeyToString(projectKey, branchMode)));
 
         String content = executeGet(uri);
         AnalysisTasksDto dto = objectMapper.readValue(content, AnalysisTasksDto.class);
@@ -114,6 +118,20 @@ public class SonarQubeConnectorImpl implements SonarQubeConnector {
 
         if (response.getCode() / 100 != 2) {
             throw new SonarQubeException(response.getContent(), "Expected status code 2xx, got " + response.getCode());
+        }
+    }
+
+    private String projectKeyToString(ProjectKey projectKey, BranchMode branchMode) {
+        switch (branchMode) {
+            case PROJECT_KEY:
+                if (projectKey.getBranch() == null) {
+                    return projectKey.getKey();
+                }
+                return projectKey.getKey() + ":" + projectKey.getBranch();
+            case SONARQUBE:
+                return projectKey.getKey();
+            default:
+                throw new IllegalStateException("Unexpected value: " + branchMode);
         }
     }
 }

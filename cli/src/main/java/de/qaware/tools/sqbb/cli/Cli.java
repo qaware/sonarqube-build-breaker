@@ -88,7 +88,7 @@ public class Cli {
 
         String projectKey = commandLine.getArgList().get(commandLine.getArgList().size() - 1);
         String branch = commandLine.getOptionValue("branch");
-        BranchMode branchMode = parseBranchMode(commandLine.getOptionValue("branch-mode", "parsedProjectKey"));
+        BranchMode branchMode = parseBranchMode(commandLine.getOptionValue("branch-mode", "projectKey"));
 
         // Collect information from environment and commandline arguments
         ProjectKey parsedProjectKey = ProjectKey.of(projectKey, branch);
