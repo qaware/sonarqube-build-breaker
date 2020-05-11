@@ -6,6 +6,12 @@ import de.qaware.tools.sqbb.library.api.BreakBuildException;
 import de.qaware.tools.sqbb.library.api.ProjectKey;
 import de.qaware.tools.sqbb.library.api.connector.Authentication;
 import de.qaware.tools.sqbb.library.impl.BuildBreakerFactory;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,14 +33,35 @@ public class Cli {
     private static final int EXIT_CODE_SUCCESS = 0;
     private static final int EXIT_CODE_FAILURE = 1;
 
+    private static final Options OPTIONS = new Options();
+
+    static {
+        OPTIONS.addOption(new Option("b", "branch", true, "Sets the branch"));
+        OPTIONS.addOption(new Option("bm", "branch-mode", true, "Sets the branch mode. Supported modes: projectKey, sonarQube. Default: projectKey"));
+        OPTIONS.addOption(new Option("d", "debug", false, "Enables debug mode"));
+    }
+
     public static void main(String[] args) {
-        checkDebugMode(args);
+        CommandLine commandLine;
+        try {
+            commandLine = new DefaultParser().parse(OPTIONS, args);
+        } catch (ParseException e) {
+            handleParseException(e);
+            System.exit(EXIT_CODE_FAILURE);
+            return;
+        }
+
+        if (commandLine.hasOption("debug")) {
+            enableDebugMode();
+        }
 
         LOGGER.debug("Started");
         boolean ok = false;
         try {
-            new Cli().run(args);
+            new Cli().run(commandLine);
             ok = true;
+        } catch (ParseException e) {
+            handleParseException(e);
         } catch (BreakBuildException e) {
             LOGGER.error("Build broken! Reason: {}", e.getMessage());
             LOGGER.debug("Exception details", e);
@@ -47,23 +74,40 @@ public class Cli {
         }
     }
 
+    private static void handleParseException(ParseException exception) {
+        LOGGER.debug("Caught ParseException", exception);
+        System.out.println("Invocation failed: " + exception.getMessage());
+        new HelpFormatter().printHelp("java -jar cli.jar <project key>", OPTIONS);
+    }
+
     @SuppressWarnings("squid:S00112") // throws exception is okay, we handle that above!
-    private void run(String[] args) throws Exception {
+    private void run(CommandLine commandLine) throws Exception {
+        if (commandLine.getArgList().isEmpty()) {
+            throw new ParseException("Provide SonarQube project key as last argument");
+        }
+
+        String projectKey = commandLine.getArgList().get(commandLine.getArgList().size() - 1);
+        String branch = commandLine.getOptionValue("branch");
+        BranchMode branchMode = parseBranchMode(commandLine.getOptionValue("branch-mode", "parsedProjectKey"));
+
         // Collect information from environment and commandline arguments
-        ProjectKey projectKey = ProjectKey.of(getProjectKey(args), null); // TODO: Support more branch modes
+        ProjectKey parsedProjectKey = ProjectKey.of(projectKey, branch);
         Authentication authentication = getAuthentication();
         String baseUrl = getBaseUrl();
 
         try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(10), baseUrl, authentication)) {
-            buildBreaker.get().breakBuildIfNeeded(projectKey, BranchMode.PROJECT_KEY); // TODO: Support more branch modes
+            buildBreaker.get().breakBuildIfNeeded(parsedProjectKey, branchMode);
         }
     }
 
-    private static void checkDebugMode(String[] args) {
-        for (String arg : args) {
-            if ("--debug".equals(arg)) {
-                enableDebugMode();
-            }
+    private BranchMode parseBranchMode(String branchMode) throws ParseException {
+        switch (branchMode) {
+            case "projectKey":
+                return BranchMode.PROJECT_KEY;
+            case "sonarQube":
+                return BranchMode.SONARQUBE;
+            default:
+                throw new ParseException(String.format("Failed to parse branch mode. Supported values: [projectKey, sonarQube]. Was: '%s'", branchMode));
         }
     }
 
@@ -73,15 +117,6 @@ public class Cli {
         root.setLevel(Level.TRACE);
 
         LOGGER.debug("Enabled debug mode");
-    }
-
-    private String getProjectKey(String[] args) {
-        if (args.length < 1) {
-            LOGGER.error("Provide SonarQube project key as 1st argument");
-            throw new IllegalStateException("Provide SonarQube project key as 1st argument");
-        }
-
-        return args[0];
     }
 
     private Authentication getAuthentication() {

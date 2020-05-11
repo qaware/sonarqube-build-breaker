@@ -13,9 +13,17 @@ A broken build is signalled with the exit code `1`. If everything is okay, the e
 The CLI tool expects the URL to the SonarQube instance in an environment variable named `SONAR_URL` and a SonarQube access
 token in the environment variable `SONAR_TOKEN`.
 
-The key of the project which should be checked is provided as the 1st commandline argument.
+The key of the project which should be checked is provided as the last commandline argument.
 
 You can enable debug mode by adding `--debug` at the end of the commandline.
+
+```
+usage: java -jar cli.jar <project key>
+ -b,--branch <arg>         Sets the branch
+ -bm,--branch-mode <arg>   Sets the branch mode. Supported modes:
+                           projectKey, sonarQube. Default: projectKey
+ -d,--debug                Enables debug mode
+```
 
 ### Example
 
