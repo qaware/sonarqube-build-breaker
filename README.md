@@ -54,7 +54,7 @@ java -jar cli.jar --branch=master --branch-mode=projectKey <your project key>
 If you use newer versions of SonarQube, the `-Dsonar.branch` is deprecated and no longer works. You can either purchase a license if you want to support the
 SonarQube developers or you can [install this plugin](https://github.com/mc1arke/sonarqube-community-branch-plugin).
 
-Then you can use the `-Dsonar.branch.name` property when running the SonarQube analysis.
+Then you can use the `-Dsonar.branch` property when running the SonarQube analysis.
 
 If you have such projects, this is how you would run the Maven plugin:
 
