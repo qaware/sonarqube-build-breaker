@@ -2,6 +2,10 @@
 
 ## Unreleased next version
 
+## 2.1 - 2020-08-05
+
+* Add `skip` configuration parameter
+
 ## 2.0 - 2020-05-11
 
 * Update dependencies
