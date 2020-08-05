@@ -266,7 +266,7 @@
                     <plugin>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <configuration>
-                            <keyname>90A084A6C497472E00C141D4325DE38C43BFA040</keyname>
+                            <keyname>7411E3A7DFE15279D248E852C7F413FF1ABC58E6</keyname>
                             <executable>gpg2</executable>
                         </configuration>
                         <executions>
