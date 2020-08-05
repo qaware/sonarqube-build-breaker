@@ -1,6 +1,7 @@
 # SonarQube build breaker
 
 [![Build Status](https://travis-ci.org/qaware/sonarqube-build-breaker.svg?branch=master)](https://travis-ci.org/qaware/sonarqube-build-breaker)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.qaware.tools.sonarqube-build-breaker/sonarqube-build-breaker/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.qaware.tools.sonarqube-build-breaker/sonarqube-build-breaker)
 
 Breaks the build if the SonarQube quality gate of the project is red.
 
