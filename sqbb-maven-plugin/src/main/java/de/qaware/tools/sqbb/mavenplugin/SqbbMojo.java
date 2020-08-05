@@ -37,9 +37,16 @@ public class SqbbMojo extends AbstractMojo {
     private long waitTime;
     @Parameter(property = "sqbb.branchMode", defaultValue = "projectKey")
     private String branchMode;
+    @Parameter(property = "sqbb.skip", defaultValue = "false")
+    private boolean skip;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            LOGGER.info("Skipping SonarQube build breaker execution");
+            return;
+        }
+
         BranchMode branchMode = new BranchModeParser().parse(this.branchMode);
         if (branch == null) {
             LOGGER.info("Running SonarQube build breaker on project {}", projectKey);
