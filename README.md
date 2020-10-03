@@ -1,6 +1,6 @@
 # SonarQube build breaker
 
-![Build](https://github.com/qaware/sonarqube-build-breaker/workflows/Java%20CI%20with%20Maven/badge.svg)
+[![Build](https://github.com/qaware/sonarqube-build-breaker/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/qaware/sonarqube-build-breaker/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.qaware.tools.sonarqube-build-breaker/sonarqube-build-breaker/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.qaware.tools.sonarqube-build-breaker/sonarqube-build-breaker)
 
 Breaks the build if the SonarQube quality gate of the project is red.
