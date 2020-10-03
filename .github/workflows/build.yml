@@ -11,10 +11,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v2
-            -   name: Set up JDK 1.8
+            -   name: Set up JDK
                 uses: actions/setup-java@v1
                 with:
-                    java-version: 1.8
+                    java-version: 11
             -   name: Cache local Maven repository
                 uses: actions/cache@v2
                 with:
@@ -23,9 +23,7 @@ jobs:
                     restore-keys: |
                         ${{ runner.os }}-maven-
             -   name: Build with Maven
-                run: mvn clean package
-            -   name: Run SonarQube analysis
-                run: mvn sonar:sonar -Dsonar.login=${SONARCLOUD}
+                run: mvn clean package && mvn sonar:sonar -Dsonar.login=${SONARCLOUD}
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                     SONARCLOUD: ${{ secrets.SONARCLOUD }}
