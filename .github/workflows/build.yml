@@ -27,4 +27,5 @@ jobs:
             -   name: Run SonarQube analysis
                 run: mvn sonar:sonar -Dsonar.login=${SONARCLOUD}
                 env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                     SONARCLOUD: ${{ secrets.SONARCLOUD }}
