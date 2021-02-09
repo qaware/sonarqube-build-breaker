@@ -27,7 +27,7 @@ public final class BuildBreakerFactory {
      * @return a BuildBreaker instance
      */
     public static CloseableBuildBreaker create(Duration waitTime, String baseUrl, Authentication authentication) {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = HttpClients.createSystem();
         SonarQubeConnector sonarQubeConnector = new SonarQubeConnectorImpl(new ApacheHttpClient(httpClient), baseUrl, authentication);
         BuildBreakerImpl buildBreaker = new BuildBreakerImpl(waitTime, sonarQubeConnector);
 
