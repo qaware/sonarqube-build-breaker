@@ -2,6 +2,8 @@
 
 ## Unreleased next version
 
+* Add support for proxies ([PR](https://github.com/qaware/sonarqube-build-breaker/pull/9))
+
 ## 2.1 - 2020-08-05
 
 * Add `skip` configuration parameter
