@@ -2,6 +2,8 @@
 
 ## Unreleased next version
 
+## 2.2 - 2021-02-10
+
 * Add support for proxies ([PR](https://github.com/qaware/sonarqube-build-breaker/pull/9))
 
 ## 2.1 - 2020-08-05
