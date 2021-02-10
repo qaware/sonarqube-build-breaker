@@ -5,7 +5,7 @@
 
 Breaks the build if the SonarQube quality gate of the project is red.
 
-See [the blog post I wrote](https://qaware.blogspot.com/2020/02/breaking-your-build-on-sonarqube.html) for more details.
+See [the blog post I wrote](https://blog.qaware.de/posts/sonar-qube-build-breaker/) for more details.
 
 ## Components
 
