@@ -1,6 +1,7 @@
 # Release process
 
 1. `mvn versions:set -DgenerateBackupPoms=false -DremoveSnapshot`
+1. Update version in changelog
 1. `git commit -am "Release version $NEW_VERSION"`
 1. `mvn clean deploy -P release`
 1. `git tag version-$NEW_VERSION`
