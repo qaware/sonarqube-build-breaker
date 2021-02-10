@@ -77,6 +77,10 @@ See [this document](CHANGELOG.md).
 
 Licensed under [MIT](https://opensource.org/licenses/MIT), Copyright (c) 2019 - 2020 QAware GmbH
 
+# Contributors
+
+[See this page](https://github.com/qaware/sonarqube-build-breaker/graphs/contributors).
+
 # Maintainer
 
 Moritz Kammerer (moritz.kammerer@qaware.de | [@phxql](https://github.com/phxql/))
