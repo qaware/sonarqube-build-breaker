@@ -75,7 +75,7 @@ See [this document](CHANGELOG.md).
 
 # License
 
-Licensed under [MIT](https://opensource.org/licenses/MIT), Copyright (c) 2019 - 2020 QAware GmbH
+Licensed under [MIT](https://opensource.org/licenses/MIT), Copyright (c) 2019 - 2021 QAware GmbH
 
 # Contributors
 
