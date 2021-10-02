@@ -6,7 +6,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthenticationTest {
     @Test
-    void toBasicAuth() {
+    void fromToken() {
         assertThat(Authentication.fromToken("token-1").toHttpBasicAuth()).isEqualTo("Basic dG9rZW4tMTo=");
+    }
+
+    @Test
+    void fromUsernameAndPassword() {
+        assertThat(Authentication.fromUsernameAndPassword("user-1", "password-1").toHttpBasicAuth()).isEqualTo("Basic dXNlci0xOnBhc3N3b3JkLTE=");
     }
 }
