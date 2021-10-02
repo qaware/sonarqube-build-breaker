@@ -35,7 +35,7 @@ public class Cli {
             commandLine = parser.parse(args);
         } catch (ParseException e) {
             LOGGER.debug("Caught ParseException", e);
-            System.out.println("Invocation failed: " + e.getMessage());
+            LOGGER.error("Invocation failed: {}", e.getMessage());
             parser.printHelp();
             System.exit(EXIT_CODE_FAILURE);
             return;

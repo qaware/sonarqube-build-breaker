@@ -71,9 +71,6 @@ public class SqbbMojo extends AbstractMojo {
     @Nullable
     private String fallbackBranch;
 
-    public SqbbMojo() {
-    }
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
@@ -83,18 +80,21 @@ public class SqbbMojo extends AbstractMojo {
 
         String effectiveBranch = getBranch();
         String effectiveProjectKey = getProjectKey();
+        BranchMode effectiveBranchMode = new BranchModeParser().parse(this.branchMode);
 
-        BranchMode branchMode = new BranchModeParser().parse(this.branchMode);
         if (effectiveBranch == null) {
             LOGGER.info("Running SonarQube build breaker on project {}", effectiveProjectKey);
         } else {
-            LOGGER.info("Running SonarQube build breaker on project {}, branch {} (mode: {})", effectiveProjectKey, effectiveBranch, branchMode);
+            LOGGER.info("Running SonarQube build breaker on project {}, branch {} (mode: {})", effectiveProjectKey, effectiveBranch, effectiveBranchMode);
         }
 
         try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(waitTime), getSonarQubeUrl(), getAuthentication())) {
-            buildBreaker.get().breakBuildIfNeeded(ProjectKey.of(effectiveProjectKey, effectiveBranch), branchMode);
+            buildBreaker.get().breakBuildIfNeeded(ProjectKey.of(effectiveProjectKey, effectiveBranch), effectiveBranchMode);
         } catch (BreakBuildException e) {
             throw new MojoFailureException("SonarQube build breaker", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MojoExecutionException("Got interrupted while running build breaker", e);
         } catch (Exception e) {
             throw new MojoExecutionException("Exception while running build breaker", e);
         }
