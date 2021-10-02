@@ -82,7 +82,21 @@ public class Cli {
     }
 
     private Authentication getAuthentication() {
-        return Authentication.fromToken(getEnvOrFail("SONAR_TOKEN"));
+        String username = System.getenv("SONAR_USERNAME");
+        String password = System.getenv("SONAR_PASSWORD");
+        String token = System.getenv("SONAR_TOKEN");
+
+        if (token != null) {
+            LOGGER.debug("Using authentication from SONAR_TOKEN env variable");
+            return Authentication.fromToken(token);
+        }
+
+        if (username != null && password != null) {
+            LOGGER.debug("Using authentication from SONAR_USERNAME and SONAR_PASSWORD env variables");
+            return Authentication.fromUsernameAndPassword(username, password);
+        }
+
+        throw new IllegalStateException("No authentication variables (SONAR_USERNAME, SONAR_PASSWORD or SONAR_TOKEN) have been found");
     }
 
     private String getBaseUrl() {

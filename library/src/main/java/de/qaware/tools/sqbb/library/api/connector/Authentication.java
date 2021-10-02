@@ -48,4 +48,15 @@ public class Authentication {
         // See https://docs.sonarqube.org/latest/extend/web-api/
         return new Authentication(token, "");
     }
+
+    /**
+     * creates an authentication object from the given username and password.
+     *
+     * @param username username
+     * @param password password
+     * @return authentication object
+     */
+    public static Authentication fromUsernameAndPassword(String username, String password) {
+        return new Authentication(username, password);
+    }
 }

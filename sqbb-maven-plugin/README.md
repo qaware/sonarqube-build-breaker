@@ -21,7 +21,9 @@ mvn de.qaware.tools.sonarqube-build-breaker:sqbb-maven-plugin:sqbb -Dsqbb.sonarQ
 ### Configuration
 
 * `sqbb.sonarQubeUrl`: URL to the SonarQube instance. Required.
-* `sqbb.sonarQubeToken`: Authentication token for the SonarQube instance. Required.
+* `sqbb.sonarQubeToken`: Authentication token for the SonarQube instance. Required if no username/password are provided.
+* `sqbb.sonarUsername`: Authentication username for the SonarQube instance. Required if no token is provided.
+* `sqbb.sonarPassword`: Authentication password for the SonarQube instance. Required if no token is provided.
 * `sqbb.projectKey`: SonarQube project key. Defaults to `${project.groupId}:${project.artifactId}`
 * `sqbb.branch`: If set, gets appended to the `projectKey`.
 * `sqbb.branchMode`: Branch mode. Can be `projectKey` or `sonarQube`. Defaults to `projectKey`.
@@ -39,6 +41,8 @@ You can also configure the plugin like so:
             <configuration>
                 <sonarQubeUrl>...</sonarQubeUrl>
                 <sonarQubeToken>...</sonarQubeToken>
+                <sonarUsername>...</sonarUsername>
+                <sonarPassword>...</sonarPassword>
                 <projectKey>...</projectKey>
                 <branch>...</branch>
             </configuration>
