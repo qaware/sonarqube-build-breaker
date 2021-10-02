@@ -31,8 +31,12 @@ public class SqbbMojo extends AbstractMojo {
     private String branch;
     @Parameter(property = "sqbb.sonarQubeUrl", required = true)
     private String sonarQubeUrl;
-    @Parameter(property = "sqbb.sonarQubeToken", required = true)
+    @Parameter(property = "sqbb.sonarQubeToken", required = false)
     private String sonarQubeToken;
+    @Parameter(property = "sqbb.sonarQubeUsername", required = false)
+    private String sonarQubeUsername;
+    @Parameter(property = "sqbb.sonarQubePassword", required = false)
+    private String sonarQubePassword;
     @Parameter(property = "sqbb.waitTime", defaultValue = "10")
     private long waitTime;
     @Parameter(property = "sqbb.branchMode", defaultValue = "projectKey")
@@ -54,12 +58,26 @@ public class SqbbMojo extends AbstractMojo {
             LOGGER.info("Running SonarQube build breaker on project {}, branch {} (mode: {})", projectKey, branch, branchMode);
         }
 
-        try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(waitTime), sonarQubeUrl, Authentication.fromToken(sonarQubeToken))) {
+        try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(waitTime), sonarQubeUrl, buildAuthentication())) {
             buildBreaker.get().breakBuildIfNeeded(ProjectKey.of(projectKey, branch), branchMode);
         } catch (BreakBuildException e) {
             throw new MojoFailureException("SonarQube build breaker", e);
         } catch (Exception e) {
             throw new MojoExecutionException("Exception while running build breaker", e);
         }
+    }
+
+    private Authentication buildAuthentication() throws MojoFailureException {
+        if (sonarQubeToken != null) {
+            LOGGER.debug("Using authentication from sqbb.sonarQubeToken");
+            return Authentication.fromToken(sonarQubeToken);
+        }
+
+        if (sonarQubeUsername != null && sonarQubePassword != null) {
+            LOGGER.debug("Using authentication from sqbb.sonarQubeUsername and sqbb.sonarQubePassword");
+            return Authentication.fromUsernameAndPassword(sonarQubeUsername, sonarQubePassword);
+        }
+
+        throw new MojoFailureException("No authentication settings (sqbb.sonarQubeToken, sqbb.sonarQubeUsername or sqbb.sonarQubePassword) have been found");
     }
 }
