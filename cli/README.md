@@ -1,7 +1,6 @@
 # SonarQube Build Breaker CLI
 
-This CLI checks the pending SonarQube analysis tasks for a given project. It waits until a pending analysis is done. It
-then breaks the build if:
+This CLI checks the pending SonarQube analysis tasks for a given project. It waits until a pending analysis is done. It then breaks the build if:
 
 * the analysis failed (can happen if the database is corrupt, SonarQube issues, etc.)
 * if the quality gate of the project is in error state (red)
@@ -10,8 +9,9 @@ A broken build is signalled with the exit code `1`. If everything is okay, the e
 
 ## Usage
 
-The CLI tool expects the URL to the SonarQube instance in an environment variable named `SONAR_URL` and a SonarQube access
-token in the environment variable `SONAR_TOKEN`.
+The CLI tool expects the URL to the SonarQube instance in an environment variable named `SONAR_URL`.
+
+Authentication is either read from the environment variable `SONAR_TOKEN` (token authentication) or from the environment variables `SONAR_USERNAME` and `SONAR_PASSWORD`.
 
 The key of the project which should be checked is provided as the last commandline argument.
 
