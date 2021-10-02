@@ -24,18 +24,26 @@ import java.time.Duration;
 public class SqbbMojo extends AbstractMojo {
     private static final Logger LOGGER = LoggerFactory.getLogger(SqbbMojo.class);
 
-    @Parameter(property = "sqbb.projectKey", defaultValue = "${project.groupId}:${project.artifactId}")
+    // See https://docs.sonarqube.org/latest/analysis/analysis-parameters/
+    private static final String DEFAULT_SONARQUBE_URL = "http://localhost:9000";
+
+    @Parameter(property = "sqbb.projectKey")
+    @Nullable
     private String projectKey;
     @Parameter(property = "sqbb.branch")
     @Nullable
     private String branch;
-    @Parameter(property = "sqbb.sonarQubeUrl", required = true)
+    @Parameter(property = "sqbb.sonarQubeUrl")
+    @Nullable
     private String sonarQubeUrl;
-    @Parameter(property = "sqbb.sonarQubeToken", required = false)
+    @Parameter(property = "sqbb.sonarQubeToken")
+    @Nullable
     private String sonarQubeToken;
-    @Parameter(property = "sqbb.sonarQubeUsername", required = false)
+    @Parameter(property = "sqbb.sonarQubeUsername")
+    @Nullable
     private String sonarQubeUsername;
-    @Parameter(property = "sqbb.sonarQubePassword", required = false)
+    @Parameter(property = "sqbb.sonarQubePassword")
+    @Nullable
     private String sonarQubePassword;
     @Parameter(property = "sqbb.waitTime", defaultValue = "10")
     private long waitTime;
@@ -44,6 +52,28 @@ public class SqbbMojo extends AbstractMojo {
     @Parameter(property = "sqbb.skip", defaultValue = "false")
     private boolean skip;
 
+    @Parameter(defaultValue = "${project.groupId}:${project.artifactId}")
+    private String defaultProjectKey;
+
+    @Parameter(property = "sonar.host.url")
+    @Nullable
+    private String fallbackUrl;
+    @Parameter(property = "sonar.login")
+    @Nullable
+    private String fallbackLogin;
+    @Parameter(property = "sonar.password")
+    @Nullable
+    private String fallbackPassword;
+    @Parameter(property = "sonar.projectKey")
+    @Nullable
+    private String fallbackProjectKey;
+    @Parameter(property = "sonar.branch.name")
+    @Nullable
+    private String fallbackBranch;
+
+    public SqbbMojo() {
+    }
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
@@ -51,15 +81,18 @@ public class SqbbMojo extends AbstractMojo {
             return;
         }
 
+        String effectiveBranch = getBranch();
+        String effectiveProjectKey = getProjectKey();
+
         BranchMode branchMode = new BranchModeParser().parse(this.branchMode);
-        if (branch == null) {
-            LOGGER.info("Running SonarQube build breaker on project {}", projectKey);
+        if (effectiveBranch == null) {
+            LOGGER.info("Running SonarQube build breaker on project {}", effectiveProjectKey);
         } else {
-            LOGGER.info("Running SonarQube build breaker on project {}, branch {} (mode: {})", projectKey, branch, branchMode);
+            LOGGER.info("Running SonarQube build breaker on project {}, branch {} (mode: {})", effectiveProjectKey, effectiveBranch, branchMode);
         }
 
-        try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(waitTime), sonarQubeUrl, buildAuthentication())) {
-            buildBreaker.get().breakBuildIfNeeded(ProjectKey.of(projectKey, branch), branchMode);
+        try (BuildBreakerFactory.CloseableBuildBreaker buildBreaker = BuildBreakerFactory.create(Duration.ofSeconds(waitTime), getSonarQubeUrl(), getAuthentication())) {
+            buildBreaker.get().breakBuildIfNeeded(ProjectKey.of(effectiveProjectKey, effectiveBranch), branchMode);
         } catch (BreakBuildException e) {
             throw new MojoFailureException("SonarQube build breaker", e);
         } catch (Exception e) {
@@ -67,7 +100,44 @@ public class SqbbMojo extends AbstractMojo {
         }
     }
 
-    private Authentication buildAuthentication() throws MojoFailureException {
+    private String getProjectKey() {
+        if (projectKey != null) {
+            return projectKey;
+        }
+
+        if (fallbackProjectKey != null) {
+            return fallbackProjectKey;
+        }
+
+        return defaultProjectKey;
+    }
+
+    @Nullable
+    private String getBranch() {
+        if (branch != null) {
+            return branch;
+        }
+
+        if (fallbackBranch != null) {
+            return fallbackBranch;
+        }
+
+        return null;
+    }
+
+    private String getSonarQubeUrl() {
+        if (sonarQubeUrl != null) {
+            return sonarQubeUrl;
+        }
+
+        if (fallbackUrl != null) {
+            return fallbackUrl;
+        }
+
+        return DEFAULT_SONARQUBE_URL;
+    }
+
+    private Authentication getAuthentication() throws MojoFailureException {
         if (sonarQubeToken != null) {
             LOGGER.debug("Using authentication from sqbb.sonarQubeToken");
             return Authentication.fromToken(sonarQubeToken);
@@ -76,6 +146,20 @@ public class SqbbMojo extends AbstractMojo {
         if (sonarQubeUsername != null && sonarQubePassword != null) {
             LOGGER.debug("Using authentication from sqbb.sonarQubeUsername and sqbb.sonarQubePassword");
             return Authentication.fromUsernameAndPassword(sonarQubeUsername, sonarQubePassword);
+        }
+
+        if (fallbackPassword != null && fallbackLogin != null) {
+            // Password is set -> username / password auth
+            // See https://docs.sonarqube.org/latest/analysis/analysis-parameters/
+            LOGGER.debug("Using authentication from sonar.login and sonar.password");
+            return Authentication.fromUsernameAndPassword(fallbackLogin, fallbackPassword);
+        }
+
+        if (fallbackLogin != null) {
+            // Only login is set -> token auth
+            // See https://docs.sonarqube.org/latest/analysis/analysis-parameters/
+            LOGGER.debug("Using authentication from sonar.login");
+            return Authentication.fromToken(fallbackLogin);
         }
 
         throw new MojoFailureException("No authentication settings (sqbb.sonarQubeToken, sqbb.sonarQubeUsername or sqbb.sonarQubePassword) have been found");

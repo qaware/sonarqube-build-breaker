@@ -20,14 +20,14 @@ mvn de.qaware.tools.sonarqube-build-breaker:sqbb-maven-plugin:sqbb -Dsqbb.sonarQ
 
 ### Configuration
 
-* `sqbb.sonarQubeUrl`: URL to the SonarQube instance. Required.
-* `sqbb.sonarQubeToken`: Authentication token for the SonarQube instance. Required if no username/password are provided.
-* `sqbb.sonarQubeUsername`: Authentication username for the SonarQube instance. Required if no token is provided.
-* `sqbb.sonarQubePassword`: Authentication password for the SonarQube instance. Required if no token is provided.
-* `sqbb.projectKey`: SonarQube project key. Defaults to `${project.groupId}:${project.artifactId}`
-* `sqbb.branch`: If set, gets appended to the `projectKey`.
-* `sqbb.branchMode`: Branch mode. Can be `projectKey` or `sonarQube`. Defaults to `projectKey`.
 * `sqbb.skip`: Skip. If `true`, the plugin will do nothing.
+* `sqbb.sonarQubeUrl`: URL to the SonarQube instance. If not set, falls back to `sonar.host.url`. Defaults to `http://localhost:9000`.
+* `sqbb.sonarQubeToken`: Authentication token for the SonarQube instance. If not set, falls back to `sonar.login`.
+* `sqbb.sonarQubeUsername`: Authentication username for the SonarQube instance. If not set, falls back to `sonar.login`.
+* `sqbb.sonarQubePassword`: Authentication password for the SonarQube instance. If not set, falls back to `sonar.password`.
+* `sqbb.projectKey`: SonarQube project key. Defaults to `sonar.projectKey` if this key exists or to `${project.groupId}:${project.artifactId}`.
+* `sqbb.branch`: If set, gets appended to the `projectKey`. Falls back to `sonar.branch.name`.
+* `sqbb.branchMode`: Branch mode. Can be `projectKey` or `sonarQube`. Defaults to `projectKey`.
 
 You can also configure the plugin like so:
 
