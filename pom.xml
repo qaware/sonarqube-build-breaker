@@ -5,7 +5,7 @@
 
     <groupId>de.qaware.tools.sonarqube-build-breaker</groupId>
     <artifactId>sonarqube-build-breaker</artifactId>
-    <version>2.3-SNAPSHOT</version>
+    <version>2.3</version>
     <packaging>pom</packaging>
 
     <name>SonarQube build breaker</name>
@@ -306,7 +306,7 @@
                         <artifactId>nexus-staging-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
+                            <serverId>ossrh-qaware</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>false</autoReleaseAfterClose>
                         </configuration>
@@ -316,7 +316,7 @@
 
             <distributionManagement>
                 <snapshotRepository>
-                    <id>ossrh</id>
+                    <id>ossrh-qaware</id>
                     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
             </distributionManagement>

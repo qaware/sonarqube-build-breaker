@@ -2,6 +2,10 @@
 
 ## Unreleased next version
 
+* No changes yet
+
+## 2.3 - 2021-10-03
+
 * Fall back to Sonar properties ([Issue](https://github.com/qaware/sonarqube-build-breaker/issues/16))
 * Document skip property ([Issue](https://github.com/qaware/sonarqube-build-breaker/issues/14))
 * Add support for username/password authentication ([Issue](https://github.com/qaware/sonarqube-build-breaker/issues/13))
