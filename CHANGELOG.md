@@ -2,7 +2,7 @@
 
 ## Unreleased next version
 
-* No changes yet
+* Update dependencies
 
 ## 2.3 - 2021-10-03
 
